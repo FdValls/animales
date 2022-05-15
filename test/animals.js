@@ -1,34 +1,37 @@
-const chai = require('chai')
-const { expect } = chai
+const chai = require("chai");
+const spies = require("chai-spies");
+const { expect } = chai;
 
-// Faltaria sacar la lista de animales de la lista original 
-// y terminar los test
+chai.use(spies);
+
+const listaAnimales = [
+  {
+    nombre: 'Atenas',
+    tipo: 'Perro'
+  },
+  {
+    nombre: 'Garfield',
+    tipo: "Gato"
+  },
+  {
+    nombre: "Pepe",
+    tipo: "Sapo"
+
+  },
+]
+
 const lista = {
-  animales: [
-    {
-      nombre: 'Atenas',
-      tipo: 'Perro'
-    },
-    {
-      nombre: 'Garfield',
-      tipo: "Gato"
-    },
-    {
-      nombre: "Pepe",
-      tipo: "Sapo"
-
-    }
-  ],
+  misAnimales: function (animales) {
+    return this.animales = animales
+  },
   perros: function () {
-    return [this.animales[0]]
+    return this.animales.filter(animal => animal.tipo == 'perro')
   },
-
   gatos: function () {
-    return [this.animales[1]]
+    return this.animales.filter(animal => animal.tipo == 'gato')
   },
-
   otros: function () {
-   return [this.animales.filter(animales => animales.tipo != "Gato" && animales.tipo == "Perro")]
+    return this.animales.filter(animal => (animal.tipo != 'perro' && animal.tipo != 'gato'))
   }
 }
 
@@ -39,37 +42,34 @@ describe('Lista de animales', () => {
 
   describe('#perros', () => {
     it('devuelve los animales que son perros', () => {
-      const perros = [{
-        nombre: 'Atenas',
-        tipo: 'Perro'
-      }]
+      lista.misAnimales(listaAnimales)
+      const perros = listaAnimales.filter(animal => animal.tipo == 'perro')
       expect(lista.perros()).to.eql(perros)
     })
   })
 
   describe('#gatos', () => {
     it('devuelve los animales que son gatos', () => {
-      const gatos = [
-        {
-          nombre: 'Garfield',
-          tipo: "Gato"
-        }
-      ]
+      lista.misAnimales(listaAnimales)
+      const gatos = listaAnimales.filter(animal => animal.tipo == 'gatos')
       expect(lista.gatos()).to.eql(gatos)
     })
   })
 
   describe('#otros', () => {
     it('devuelve los animales que no son perros ni gatos', () => {
-      const otros = {
-        nombre: "Pepe",
-        tipo: "Sapo"
-      }
+      lista.misAnimales(listaAnimales)
+      const otros = listaAnimales.filter(animal => (animal.tipo != 'perro' && animal.tipo != 'gato'))
       expect(lista.otros()).to.eql(otros)
     })
 
-    // it('determina los resultados utilizando Array.filter', () => {
-    //   expect(animales.filter()).to.have.been.called()
-    // })
+    it('determina los resultados utilizando Array.filter', () => {
+      chai.spy.on(listaAnimales, "filter");
+
+      const perros = listaAnimales.filter(animal => animal.tipo == 'perro')
+
+      expect(listaAnimales.filter).to.have.been.called()
+    })
   })
+
 })
